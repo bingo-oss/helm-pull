@@ -31,8 +31,8 @@ type pullCmd struct {
 var (
 	globalUsage = `Pull charts into local folder. Will retry failed GET requests and only pull charts that do not already exist.
 Examples:
-	$ helm pull ./ repo													# Only pull
-	$ helm pull ./ repo "registry.bingosoft.net" "hub.bingosoft.net"	# Pull and replace
+	$ helm pull ./ repo
+	$ helm pull ./ repo "registry.bingosoft.net" "hub.bingosoft.net"
 `
 )
 
