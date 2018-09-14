@@ -67,21 +67,16 @@ func Run(repo *helm.Repo, localFolder string, skipVerify bool) error {
 
 	fmt.Println("Download started")
 
-	dirPath := localFolder
-	err = os.MkdirAll(dirPath, 0777)
-	if err != nil {
-		return err
-	}
-
 	for _, entire := range index.Entries {
 		for _, x := range entire {
 			for _, chartUrl := range x.URLs {
-				parseUrl, _ := url.Parse(chartUrl)
-				parseUrl.User = nil
-				chartUrl = parseUrl.String()
-
 				var fileName, filePath, projName string
 				if strings.HasPrefix(chartUrl, "http://") || strings.HasPrefix(chartUrl, "https://") {
+					parseChartUrl, _ := url.Parse(chartUrl)
+					parseRepoUrl, _ := url.Parse(repo.URL)
+					parseChartUrl.Scheme = parseRepoUrl.Scheme
+					parseChartUrl.User = nil
+					chartUrl = parseChartUrl.String()
 					values := strings.Split(strings.Replace(strings.Replace(chartUrl, repo.URL+"/", "", -1), "charts/", "", -1), "/")
 					if len(values) == 2 {
 						projName = values[0]
@@ -92,6 +87,7 @@ func Run(repo *helm.Repo, localFolder string, skipVerify bool) error {
 					chartUrl = strings.Replace(chartUrl, repo.URL+"/", "", -1)
 				}
 
+				dirPath := localFolder
 				dirPath = path.Join(dirPath, projName)
 				os.MkdirAll(dirPath, os.ModePerm)
 
@@ -119,6 +115,9 @@ func Run(repo *helm.Repo, localFolder string, skipVerify bool) error {
 						// The progress use the same line so print a new line once it's finished downloading
 						fmt.Print("\n")
 
+						out.Close()
+						resp.Body.Close()
+
 						err = os.Rename(filePath+".tmp", filePath)
 						if err != nil {
 							return err
@@ -134,6 +133,8 @@ func Run(repo *helm.Repo, localFolder string, skipVerify bool) error {
 						return err
 					}
 
+				} else if err != nil {
+					return err
 				}
 			}
 		}

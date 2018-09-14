@@ -90,16 +90,53 @@ func (its *pullCmd) pull() error {
 }
 
 func (its *pullCmd) replace() error {
-	if its.sourceImageRepo == "" {
-		return nil
-	}
 
-	fmt.Println(fmt.Sprintf("Replace %s to %s", its.sourceImageRepo, its.targetImageRepo))
+	flag := "f"
+
+	if its.sourceImageRepo != "" {
+		flag = "d"
+		fmt.Println(fmt.Sprintf("Replace `%s` to `%s` started", its.sourceImageRepo, its.targetImageRepo))
+	}
 
 	err := filepath.Walk(its.localFolder, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() {
+			repoName := info.Name()
+			if path == its.localFolder {
+				repoName = ""
+			}
+			cmdShell := `
+function push_all()
+{
+	folder=$(dirname $(readlink -f "$0"))
+	if [ ! -n $1 ]; then
+ 		echo "Please enter the repo name, Example: ./push.sh bingo"
+		return;
+	fi
+	for file in ` + "`ls $folder`;" + `
+	do
+		if [ -` + flag + ` "$folder/$file" ] ; then
+			helm push "$folder/$file" "$1"
+		fi
+	done
+}
+push_all ${1:-` + repoName + `}`
+			shellPath := path + "/push.sh"
+			if _, err := os.Stat(shellPath); os.IsNotExist(err) {
+				file, err := os.Create(shellPath)
+				if err != nil {
+					return err
+				}
+				defer file.Close()
+				file.WriteString(cmdShell)
+				file.Close()
+			}
 			return nil
 		}
+
+		if its.sourceImageRepo == "" {
+			return nil
+		}
+
 		if filepath.Ext(info.Name()) != ".tgz" {
 			return nil
 		}
@@ -116,6 +153,11 @@ func (its *pullCmd) replace() error {
 		}
 		defer gr.Close()
 
+		dirPath := filepath.Join(filepath.Dir(path), info.Name())
+		dirPath = strings.TrimRight(dirPath, ".tgz")
+		os.RemoveAll(dirPath)
+		os.MkdirAll(dirPath, os.ModePerm)
+
 		tr := tar.NewReader(gr)
 		for {
 			h, err := tr.Next()
@@ -125,8 +167,7 @@ func (its *pullCmd) replace() error {
 			if err != nil {
 				return err
 			}
-
-			fileName := filepath.Join(filepath.Dir(path), h.Name)
+			fileName := filepath.Join(dirPath, strings.TrimLeft(h.Name, strings.Split(h.Name, "/")[0]+"/"))
 			os.MkdirAll(filepath.Dir(fileName), os.ModePerm)
 
 			fw, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY, os.ModePerm)
@@ -140,16 +181,32 @@ func (its *pullCmd) replace() error {
 				return err
 			}
 			content := string(buf)
-			content = strings.Replace(content, its.sourceImageRepo, its.targetImageRepo, -1)
+
+			if its.sourceImageRepo != "" {
+				content = strings.Replace(content, its.sourceImageRepo, its.targetImageRepo, -1)
+			}
 
 			fw.WriteString(content)
+			fw.Close()
 		}
 
-		fmt.Println("Replace", strings.Replace(path, its.localFolder+"/", "", -1), "complete")
-		os.Remove(path)
+		if its.sourceImageRepo != "" {
+			fmt.Println("Replacing", strings.Replace(path, its.localFolder+"/", "", -1), "complete")
+		}
+
+		gr.Close()
+		file.Close()
+		err = os.Remove(path)
+		if err != nil {
+			return err
+		}
 
 		return nil
 	})
+
+	if flag == "f" {
+		fmt.Println("Replace finished")
+	}
 
 	return err
 }

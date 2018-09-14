@@ -10,11 +10,11 @@ echo "Downloading and installing helm-pull v${version} ..."
 
 url=""
 if [ "$(uname)" = "Darwin" ]; then
-    url="https://github.com/chartmuseum/helm-push/releases/download/v${version}/helm-push_${version}_darwin_amd64.tar.gz"
+    url="https://github.com/gzericlee/helm-pull/releases/download/${version}/helm-pull_${version}_darwin_amd64.tgz"
 elif [ "$(uname)" = "Linux" ] ; then
-    url="https://github.com/chartmuseum/helm-push/releases/download/v${version}/helm-push_${version}_linux_amd64.tar.gz"
+    url="https://github.com/gzericlee/helm-pull/releases/download/${version}/helm-pull_${version}_linux_amd64.tgz"
 else
-    url="https://github.com/chartmuseum/helm-push/releases/download/v${version}/helm-push_${version}_windows_amd64.tar.gz"
+    url="https://github.com/gzericlee/helm-pull/releases/download/${version}/helm-pull_${version}_windows_amd64.tgz"
 fi
 
 echo $url
