@@ -4,8 +4,8 @@ Pull charts into local folder. Will retry failed GET requests and only pull char
 
 Examples:
 ```
-$ helm pull ./ repo													# Only pull
-$ helm pull ./ repo "registry.bingosoft.net" "hub.bingosoft.net"	# Pull and replace
+$ helm pull ./ repo     # Only pull
+$ helm pull ./ repo "registry.bingosoft.net" "hub.bingosoft.net"    # Pull and replace
 ```
 
 Usage:
