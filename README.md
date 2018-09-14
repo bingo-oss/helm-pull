@@ -4,19 +4,18 @@ Pull charts into local folder. Will retry failed GET requests and only pull char
 
 Examples:
 ```
-  $ helm pull ./ repo --source-image-repo=registry.bingosoft.net --target-image-repo=hub.bingosoft.net --insecure=true
+$ helm pull ./ repo													# Only pull
+$ helm pull ./ repo "registry.bingosoft.net" "hub.bingosoft.net"	# Pull and replace
 ```
 
 Usage:
 ```
-helm pull [local_folder] [repo_name] [flags]
+helm pull [local_folder] [repo_name] [replace_old] [replace_new]
 ```
 
 Flags:
 
 ```
 -h, --help                  help for helm
---insecure                  Connect to server with an insecure way by skipping certificate verification [$HELM_REPO_INSECURE]
---source-image-repo string  Current image repository [$HELM_SOURCE_IMAGE_REPO]
---target-image-repo string  Change to the new image repository [$HELM_TARGET_IMAGE_REPO]
+    --insecure  bool        Connect to server with an insecure way by skipping certificate verification [$HELM_REPO_INSECURE]
 ```
