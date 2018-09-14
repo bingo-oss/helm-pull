@@ -113,7 +113,7 @@ function push_all()
 push_all ${1:-` + repoName + `}`
 			shellPath := path + "/push.sh"
 			if _, err := os.Stat(shellPath); os.IsNotExist(err) {
-				file, err := os.OpenFile(shellPath, os.O_CREATE, os.ModePerm)
+				file, err := os.OpenFile(shellPath, os.O_CREATE|os.O_RDWR, os.ModePerm)
 				if err != nil {
 					return err
 				}
