@@ -1,8 +1,0 @@
-name: "pull"
-version: "0.0.1"
-usage: "Please see https://github.com/gzericlee/helm-pull for usage"
-description: "Pull chart package"
-command: "$HELM_PLUGIN_DIR/bin/helmpull"
-hooks:
-  install: "cd $HELM_PLUGIN_DIR; scripts/install_plugin.sh"
-  update: "cd $HELM_PLUGIN_DIR; scripts/install_plugin.sh"
