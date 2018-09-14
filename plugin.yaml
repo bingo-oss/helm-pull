@@ -1,5 +1,5 @@
 name: "pull"
-version: "0.0.1"
+version: "0.1.0"
 usage: "Please see https://github.com/gzericlee/helm-pull for usage"
 description: "Pull chart package to Local"
 command: "$HELM_PLUGIN_DIR/bin/helmpull"
