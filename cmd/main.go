@@ -33,6 +33,7 @@ var (
 Examples:
 	$ helm pull ./ repo
 	$ helm pull ./ repo "registry.bingosoft.net" "hub.bingosoft.net"
+If there are any errors, please try 'helm repo update'
 `
 )
 
@@ -105,7 +106,7 @@ function push_all()
 	fi
 	for file in ` + "`ls $folder`;" + `
 	do
-		if [ -` + flag + ` "$folder/$file" ] ; then
+		if [ -` + flag + ` "$folder/$file" ]  && [ "$file"x != "push.sh"x ] ; then
 			helm push "$folder/$file" "$1"
 		fi
 	done
