@@ -1,0 +1,3 @@
+*.sh linguist-language=go
+*.go linguist-language=go
+*.yaml linguist-language=go
