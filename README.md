@@ -2,4 +2,4 @@
 Pull charts into local folder
 
 # source
-See branches
+dev branch
